@@ -8,6 +8,31 @@ export default function FormResponsesPage() {
   const [responses, setResponses] = useState([]);
   const [questionId, setQuestionId] = useState({});
 
+  const exportInCsv = () => {
+  if (!responses.length) return;
+
+  const keys = Object.keys(responses[0].answers);
+  const headers = keys.map(k => questionId[k] || k);
+  
+  let csv = headers.join(",") + "\n";
+  
+  responses.forEach(r => {
+    const row = keys.map(k => {
+      const val = r.answers[k];
+      if (typeof val === "object") return "";
+      return val || "";
+    });
+    csv += row.join(",") + "\n";
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "responses.csv";
+  a.click();
+};
+
 
   useEffect(() => {
 
@@ -37,7 +62,14 @@ export default function FormResponsesPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6">
+      <div className="flex items-center justify-between mb-6">
       <h1 className="text-3xl font-semibold mb-4">Form Responses</h1>
+      <button 
+      onClick={exportInCsv}
+      className="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+       >Export</button>
+      </div>
+
 
       <div className="space-y-4">
         {responses.map(r => (

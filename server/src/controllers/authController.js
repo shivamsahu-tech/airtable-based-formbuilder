@@ -202,19 +202,14 @@ export async function getCurrentUser(req, res) {
   }
 }
 
-export function logout(req, res, next) {
-  console.log("Logging out, sessionID:", req.sessionID);
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Error destroying session:", err);
-      return next(err);
-    }
-    res.clearCookie('sessionId', { 
-      path: '/',
-      domain: process.env.COOKIE_DOMAIN, 
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none'
-    });
-    res.status(200).json({ message: 'Logged out successfully' });
+export function logout(req, res) {
+  console.log("Logging out user");
+  
+  res.clearCookie('userId', { 
+    path: '/',
+    secure: true,
+    sameSite: 'none',
   });
+  
+  res.status(200).json({ message: 'Logged out successfully' });
 }
