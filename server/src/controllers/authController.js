@@ -44,6 +44,8 @@
       code_verifier
     );
 
+    console.log("code_verifier stored in the redis : ", code_verifier);
+
     // console.log(req.sessionID, " ", state)
     console.log("Oauth state ", req.session.oauthState);
 
@@ -64,12 +66,12 @@
 
   export async function handleCallback(req, res) {
     const { code, state } = req.query;
-    console.log(code , " " , state);
+   console.log("in callback : ", code , " " , state)
 
     if (!code || !state) {
       return res.status(400).send("Missing code or state");
     }
-    console.log("Stored oauth state ", req.session.oauthState);
+    console.log("Stored oauth state from session ", req.session.oauthState);
     console.log("Received state ", state);
     // if (state !== req.session.oauthState) {
     //   return res.status(400).send("Invalid state");
@@ -81,6 +83,8 @@
     if (!code_verifier) {
       return res.status(400).send("Missing code_verifier in session");
     }
+
+    console.log("Received code_verified : ", code_verifier);
 
     await redisClient.del(`oauth:${state}`);
 
@@ -102,6 +106,8 @@
       console.log("Token received");
 
       const tokens = tokenResponse.data;
+
+      console.log("tokes: ", tokens);
     
       const whoamiResponse = await axios.get(
         "https://api.airtable.com/v0/meta/whoami", 
@@ -111,6 +117,8 @@
           }
         }
       );
+
+      console.log("Whoami response : ", whoamiResponse.data);
 
       const { id: airtableUserId } = whoamiResponse.data;
 
@@ -130,6 +138,8 @@
 
       req.session.userId = user._id;
 
+      console.log("User logged in with id on callback funciton ", user._id);
+
       const frontendDashboardUrl = process.env.FRONTEND_REDIRECT_URL; 
 
       const redirectUrl = new URL(frontendDashboardUrl);
@@ -148,6 +158,8 @@
   export async function getCurrentUser(req, res) {
     console.log("user id ",req.sessionID);
     const userId = req.session.userId; 
+
+    console.log("Fetched user id from session ", userId);
     
     if (!userId) {
       return res.status(401).json({ message: 'unauthorized' });
