@@ -15,7 +15,12 @@ import { createClient } from "redis";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGINS, 
+    credentials: true,
+  })
+);
 
 const redisClient = createClient({
   url: process.env.REDIS_URL
@@ -48,20 +53,14 @@ async function startApp() {
         resave: false,
         saveUninitialized: false,
         cookie: {
-          secure: true,     
+          secure: process.env.NODE_ENV === 'production',     
           httpOnly: true,
-          sameSite: "none",
+          sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         },
       })
     );
 
-    app.use(
-      cors({
-        origin: process.env.CORS_ORIGINS, 
-        credentials: true,
-      })
-    );
 
     app.use('/auth', authRoutes);
     // all bases and form related routes started with /api
