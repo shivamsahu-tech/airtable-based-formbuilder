@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import  useAuthStore  from "../stores/authStore"
 
 
@@ -7,6 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 export function Navbar() {
   const user = useAuthStore((state) => state.user)
   const logoutZustand = useAuthStore((state) => state.logout)
+  const navigate = useNavigate()
   
   console.log("Navbar user:", user)
 
@@ -16,7 +17,8 @@ export function Navbar() {
         method: 'POST',
         credentials: 'include',
       })
-      logoutZustand() 
+      logoutZustand()   
+      navigate('/')
     } catch (error) {
       console.error('Logout failed', error)
     }
