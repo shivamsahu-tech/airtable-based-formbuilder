@@ -24,13 +24,25 @@
     return base64url(hash);
   }
 
-  export function startLogin(req, res) {
+  let redisClient;
+
+  export function setRedisClient(client) {
+    redisClient = client;
+  }
+
+  export async function startLogin(req, res) {
     const state = crypto.randomUUID();
     const code_verifier = codeVerifier();
     const code_challenge = codeChallenge(code_verifier);
 
     req.session.oauthState = state;
     req.session.codeVerifier = code_verifier;
+
+    await redisClient.setEx(
+      `oauth:${state}`, 
+      600,
+      code_verifier
+    );
 
     // console.log(req.sessionID, " ", state)
     console.log("Oauth state ", req.session.oauthState);
@@ -57,13 +69,20 @@
     if (!code || !state) {
       return res.status(400).send("Missing code or state");
     }
-    if (state !== req.session.oauthState) {
-      return res.status(400).send("Invalid state");
-    }
-    const code_verifier = req.session.codeVerifier;
+    console.log("Stored oauth state ", req.session.oauthState);
+    console.log("Received state ", state);
+    // if (state !== req.session.oauthState) {
+    //   return res.status(400).send("Invalid state");
+    // }
+    // const code_verifier = req.session.codeVerifier;
+
+    const code_verifier = await redisClient.get(`oauth:${state}`);
+
     if (!code_verifier) {
       return res.status(400).send("Missing code_verifier in session");
     }
+
+    await redisClient.del(`oauth:${state}`);
 
     try {
           const tokenResponse = await axios.post(

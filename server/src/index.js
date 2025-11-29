@@ -8,6 +8,7 @@ import session from 'express-session';
 import authRoutes from './routes/authRoutes.js';
 import formRoutes from './routes/forms.js';
 import webhookRoutes from './routes/webhooks.js';
+import { setRedisClient } from './controllers/authController.js';
 
 import { RedisStore } from "connect-redis";
 import { createClient } from "redis";
@@ -45,6 +46,8 @@ async function startApp() {
       client: redisClient,
       prefix: "sess:", 
     });
+
+    setRedisClient(redisClient);
 
     app.use(
       session({
