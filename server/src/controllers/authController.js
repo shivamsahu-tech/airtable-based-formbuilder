@@ -126,7 +126,16 @@ export async function handleCallback(req, res) {
       }
     );
 
+    console.log("User record updated/created:", user);
+
     console.log("User logged in with id:", user._id);
+
+    res.cookie('userId', user._id.toString(), {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true, 
+      secure: true,
+      sameSite: 'none', 
+    });
 
     req.session.userId = user._id.toString();
 
@@ -166,7 +175,7 @@ export async function getCurrentUser(req, res) {
   console.log("SessionID:", req.sessionID);
   console.log("Session data:", req.session);
   
-  const userId = req.session.userId;
+  const userId = req.cookies.userId;
   console.log("Fetched userId from session:", userId);
 
   if (!userId) {
