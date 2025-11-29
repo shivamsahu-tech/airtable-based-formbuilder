@@ -8,7 +8,7 @@ import { existWebhook } from '../services/webhookService.js';
 const router = express.Router();
 
 function requireAuth(req, res, next) {
-  if (!req.session.userId) {
+  if (!req.cookies.userId) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
   next();
@@ -17,19 +17,19 @@ function requireAuth(req, res, next) {
 
 // all airtable related routes
 router.get('/bases', requireAuth, async (req, res) => {
-  const user = await User.findById(req.session.userId);
+  const user = await User.findById(req.cookies.userId);
   const bases = await getUserBases(user.accessToken);
   res.json({ bases });
 });
 
 router.get('/bases/:baseId/tables', requireAuth, async (req, res) => {
-  const user = await User.findById(req.session.userId);
+  const user = await User.findById(req.cookies.userId);
   const tables = await getBaseTables(user.accessToken, req.params.baseId);
   res.json({ tables });
 });
 
 router.get('/bases/:baseId/tables/:tableId/fields', requireAuth, async (req, res) => {
-  const user = await User.findById(req.session.userId);
+  const user = await User.findById(req.cookies.userId);
   const fields = await getTableFields(
     user.accessToken, 
     req.params.baseId, 
@@ -109,7 +109,7 @@ router.post('/forms', requireAuth, async (req, res) => {
     }
 
     const form = new Form({
-      userId: req.session.userId,
+      userId: req.cookies.userId,
       name: name || 'Untitled Form',
       airtableBaseId,
       airtableTableId,
@@ -120,7 +120,7 @@ router.post('/forms', requireAuth, async (req, res) => {
 
 
      try {
-      const user = await User.findById(req.session.userId);
+      const user = await User.findById(req.cookies.userId);
       const webhookId = await existWebhook(user, airtableBaseId);
       
       const webhookExists = user.webhooks?.some(w => w.baseId === airtableBaseId);
@@ -146,7 +146,7 @@ router.post('/forms', requireAuth, async (req, res) => {
 });
 
 router.get('/forms', requireAuth, async (req, res) => {
-  const forms = await Form.find({ userId: req.session.userId });
+  const forms = await Form.find({ userId: req.cookies.userId });
   res.json({ forms });
 });
 

@@ -130,6 +130,8 @@ export async function handleCallback(req, res) {
 
     console.log("User logged in with id:", user._id);
 
+
+    // 
     res.cookie('userId', user._id.toString(), {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true, 
