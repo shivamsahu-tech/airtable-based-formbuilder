@@ -2,6 +2,10 @@
 
 build custom forms with airtable, and store response in both airtable and the mongoDB.
 
+Deployed on vercel and render
+client: https://airtable-form.vercel.app
+server: https://airtable-based-formbuilder.onrender.com
+
 
 ## Setup Instrucitons: 
 
@@ -10,7 +14,7 @@ This Project contains 2 sub sobfolder /client and /server.
 
 - clone the project
 ```jsx
-git clone https://github.com/shivamsahu-tech/airtable-based-from.git
+git clone https://github.com/shivamsahu-tech/airtable-based-formbuilder.git
 cd airtable-based-from
 ```
 - Setup client
@@ -95,9 +99,13 @@ save user
 
 ### Screen shot and demo videos
 
+![Image 1](https://drive.google.com/uc?export=view&id=1g3OWWHG38b7_6XVfu8Vh9b7LNbvZ8bZ4)
+![Image 2](https://drive.google.com/uc?export=view&id=1qizRIU9tC7PdLJu3bemgmIZriQO1Iba_)
+![Image 3](https://drive.google.com/uc?export=view&id=1_9jZJwBv1vib1bmyZ0i7-BWyw7WE9IV4)
+![Image 4](https://drive.google.com/uc?export=view&id=1BkJVvfHaBd2knZ8VOF_2qzjabVqYHOOJ)
+![Image 5](https://drive.google.com/uc?export=view&id=1jri8AMJD92vgIlImbX6ck9dWZ-H45-Gi)
 
-
-
+[Watch Demo Video](https://drive.google.com/file/d/18Q0z-MypHZtwsqmSFjBkbJ2IAoP3yiMS/view?usp=sharing)
 
 --- 
 ## Other specificaiton
