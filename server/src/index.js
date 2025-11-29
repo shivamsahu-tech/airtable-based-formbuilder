@@ -7,6 +7,7 @@ import session from 'express-session';
 
 import authRoutes from './routes/authRoutes.js';
 import formRoutes from './routes/forms.js';
+import webhookRoutes from './routes/webhooks.js';
 
 import { RedisStore } from "connect-redis";
 import { createClient } from "redis";
@@ -19,11 +20,6 @@ const PORT = process.env.PORT || 5000;
 const redisClient = createClient({
   url: process.env.REDIS_URL
 });
-
-const allowedOrigins = (process.env.CORS_ORIGINS || process.env.FRONTEND_URL || '')
-  .split(',')
-  .map(origin => origin.trim())
-  .filter(Boolean);
 
 app.use(cookieParser());
 app.use(express.json());
@@ -52,9 +48,9 @@ async function startApp() {
         resave: false,
         saveUninitialized: false,
         cookie: {
-          secure: false,     
+          secure: true,     
           httpOnly: true,
-          sameSite: "lax",
+          sameSite: "none",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         },
       })
@@ -62,7 +58,7 @@ async function startApp() {
 
     app.use(
       cors({
-        origin: allowedOrigins.length ? allowedOrigins : true,
+        origin: process.env.CORS_ORIGINS, 
         credentials: true,
       })
     );
@@ -70,6 +66,8 @@ async function startApp() {
     app.use('/auth', authRoutes);
     // all bases and form related routes started with /api
     app.use('/api', formRoutes);
+
+    app.use('/api/webhooks', webhookRoutes);
 
 
     app.use((err, _req, res, _next) => {

@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema(
     accessToken: { type: String, required: true },
     lastLoginAt: { type: Date, default: Date.now },
     webhookId: String,
+    webhooks: [{
+      baseId: String,
+      webhookId: String,
+      createdAt: { type: Date, default: Date.now }
+    }]
   },
   { timestamps: true },
 );

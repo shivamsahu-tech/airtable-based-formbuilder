@@ -3,6 +3,7 @@ import Form from '../models/Form.js';
 import Response from '../models/Response.js';
 import User from '../models/User.js';
 import {getBaseTables, getTableFields, getUserBases, createAirtableRecord} from '../services/airtableService.js';
+import { existWebhook } from '../services/webhookService.js';
 
 const router = express.Router();
 
@@ -117,6 +118,24 @@ router.post('/forms', requireAuth, async (req, res) => {
     
     await form.save();
 
+
+     try {
+      const user = await User.findById(req.session.userId);
+      const webhookId = await existWebhook(user, airtableBaseId);
+      
+      const webhookExists = user.webhooks?.some(w => w.baseId === airtableBaseId);
+      if (!webhookExists) {
+        if (!user.webhooks) user.webhooks = [];
+        user.webhooks.push({
+          baseId: airtableBaseId,
+          webhookId: webhookId
+        });
+        await user.save();
+        console.log('saved webhook to user');
+      }
+    } catch (webhookError) {
+      console.error('Webhook setup failed (non-critical):', webhookError.message);
+    }
 
     
     res.json({ form });
