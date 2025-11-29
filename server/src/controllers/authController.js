@@ -33,6 +33,7 @@
     req.session.codeVerifier = code_verifier;
 
     // console.log(req.sessionID, " ", state)
+    console.log("Oauth state ", req.session.oauthState);
 
     const authUrl = new URL("https://airtable.com/oauth2/v1/authorize");
     authUrl.searchParams.set("response_type", "code");
